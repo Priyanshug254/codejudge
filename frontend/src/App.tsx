@@ -4,6 +4,7 @@ import Register from './pages/Register';
 import ProblemList from './pages/ProblemList';
 import CreateProblem from './pages/CreateProblem';
 import ProblemDetail from './pages/ProblemDetail';
+import Leaderboard from './pages/Leaderboard';
 import { AuthProvider } from './context/AuthContext';
 
 function App() {
@@ -17,6 +18,7 @@ function App() {
                     <Route path="/problems" element={<ProblemList />} />
                     <Route path="/problems/create" element={<CreateProblem />} />
                     <Route path="/problems/:id" element={<ProblemDetail />} />
+                    <Route path="/leaderboard" element={<Leaderboard />} />
                     <Route path="/" element={<Navigate to="/login" />} />                </Routes>
             </AuthProvider>
         </Router>
