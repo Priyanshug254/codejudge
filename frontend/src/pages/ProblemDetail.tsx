@@ -1,0 +1,168 @@
+import React, { useEffect, useState } from 'react';
+import { useParams } from 'react-router-dom';
+import Editor from '@monaco-editor/react';
+import { Play, Send, CheckCircle, XCircle, Clock } from 'lucide-react';
+import ProblemService from '../services/problem.service';
+import SubmissionService from '../services/submission.service';
+import { Problem } from '../types/problem';
+
+const ProblemDetail: React.FC = () => {
+    const { id } = useParams<{ id: string }>();
+    const [problem, setProblem] = useState<Problem | null>(null);
+    const [code, setCode] = useState<string>('// Write your code here');
+    const [language, setLanguage] = useState('java');
+    const [output, setOutput] = useState<string>('');
+    const [loading, setLoading] = useState(false);
+    const [verdict, setVerdict] = useState<string | null>(null);
+
+    useEffect(() => {
+        if (id) {
+            loadProblem(id);
+        }
+    }, [id]);
+
+    const loadProblem = async (problemId: string) => {
+        try {
+            const response = await ProblemService.getProblemById(problemId);
+            setProblem(response.data);
+            // Set default starter code based on language
+            setCode(getDefaultCode('java'));
+        } catch (error) {
+            console.error('Error loading problem', error);
+        }
+    };
+
+    const getDefaultCode = (lang: string) => {
+        if (lang === 'java') return 'public class Solution {\n    public static void main(String[] args) {\n        // Your code here\n    }\n}';
+        if (lang === 'python') return '# Write your code here\nprint("Hello World")';
+        if (lang === 'cpp') return '#include <iostream>\nusing namespace std;\n\nint main() {\n    // Your code\n    return 0;\n}';
+        return '';
+    };
+
+    const handleRun = async () => {
+        setLoading(true);
+        setVerdict(null);
+        try {
+            const response = await SubmissionService.runCode({
+                code,
+                language,
+                problemId: Number(id)
+            });
+            setOutput(response.data.output || response.data.error || 'No output');
+        } catch (error) {
+            setOutput('Execution failed');
+        } finally {
+            setLoading(false);
+        }
+    };
+
+    const handleSubmit = async () => {
+        setLoading(true);
+        try {
+            const response = await SubmissionService.submitCode({
+                code,
+                language,
+                problemId: Number(id)
+            });
+            setOutput(response.data.output);
+            // Simplify: Backend response should contain verdict
+            // For now just showing output
+            setVerdict('Submitted');
+        } catch (error) {
+            setOutput('Submission failed');
+        } finally {
+            setLoading(false);
+        }
+    };
+
+    if (!problem) return <div className="text-white p-10">Loading...</div>;
+
+    return (
+        <div className="h-screen flex flex-col bg-gray-900 text-white">
+            {/* Header */}
+            <div className="bg-gray-800 border-b border-gray-700 px-6 py-4 flex justify-between items-center">
+                <div>
+                    <h1 className="text-xl font-bold">{problem.title}</h1>
+                    <div className="flex gap-4 text-sm text-gray-400 mt-1">
+                        <span className="text-yellow-500">{problem.difficulty}</span>
+                        <span>Time: {problem.timeLimitMs}ms</span>
+                        <span>Mem: {problem.memoryLimitMb}MB</span>
+                    </div>
+                </div>
+                <div className="flex gap-3">
+                    <select
+                        value={language}
+                        onChange={(e) => {
+                            setLanguage(e.target.value);
+                            setCode(getDefaultCode(e.target.value));
+                        }}
+                        className="bg-gray-700 border border-gray-600 rounded px-3 py-1.5 focus:outline-none"
+                    >
+                        <option value="java">Java</option>
+                        <option value="python">Python</option>
+                        <option value="cpp">C++</option>
+                    </select>
+                    <button
+                        onClick={handleRun}
+                        disabled={loading}
+                        className="flex items-center gap-2 bg-gray-700 hover:bg-gray-600 px-4 py-1.5 rounded transition-colors"
+                    >
+                        <Play size={16} /> Run
+                    </button>
+                    <button
+                        onClick={handleSubmit}
+                        disabled={loading}
+                        className="flex items-center gap-2 bg-green-600 hover:bg-green-700 px-4 py-1.5 rounded transition-colors"
+                    >
+                        <Send size={16} /> Submit
+                    </button>
+                </div>
+            </div>
+
+            {/* Main Content */}
+            <div className="flex-1 flex overflow-hidden">
+                {/* Left: Description */}
+                <div className="w-1/3 border-r border-gray-700 p-6 overflow-y-auto bg-gray-900">
+                    <div className="prose prose-invert max-w-none">
+                        <h3 className="text-lg font-semibold mb-2">Description</h3>
+                        <p className="whitespace-pre-wrap">{problem.description}</p>
+                    </div>
+                </div>
+
+                {/* Right: Editor & Output */}
+                <div className="w-2/3 flex flex-col">
+                    <div className="flex-1">
+                        <Editor
+                            height="100%"
+                            theme="vs-dark"
+                            language={language.toLowerCase()}
+                            value={code}
+                            onChange={(value) => setCode(value || '')}
+                            options={{
+                                minimap: { enabled: false },
+                                fontSize: 14,
+                                padding: { top: 16 }
+                            }}
+                        />
+                    </div>
+
+                    {/* Output Panel */}
+                    <div className="h-48 bg-gray-800 border-t border-gray-700 flex flex-col">
+                        <div className="px-4 py-2 border-b border-gray-700 text-sm font-medium text-gray-400 uppercase">
+                            Output
+                        </div>
+                        <div className="flex-1 p-4 font-mono text-sm overflow-y-auto">
+                            {loading ? (
+                                <div className="text-gray-400 animate-pulse">Running code...</div>
+                            ) : (
+                                <pre className="whitespace-pre-wrap">{output || 'Run your code to see output'}</pre>
+                            )}
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    );
+};
+
+export default ProblemDetail;
