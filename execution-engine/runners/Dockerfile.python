@@ -1,0 +1,8 @@
+FROM python:3.9-slim
+
+WORKDIR /app
+
+# No constraints here, we enforce them via 'docker run' flags (cpus, memory)
+# Just a simple runner that expects a file named 'solution.py' and input via stdin
+
+CMD ["python3", "solution.py"]

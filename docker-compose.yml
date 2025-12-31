@@ -1,0 +1,24 @@
+version: '3.8'
+
+services:
+  # Main Database
+  postgres:
+    image: postgres:15-alpine
+    container_name: codejudge_db
+    environment:
+      POSTGRES_USER: codejudge
+      POSTGRES_PASSWORD: password
+      POSTGRES_DB: codejudge_db
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    networks:
+      - codejudge-network
+
+networks:
+  codejudge-network:
+    driver: bridge
+
+volumes:
+  postgres_data:
