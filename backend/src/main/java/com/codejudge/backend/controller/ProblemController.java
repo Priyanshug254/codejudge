@@ -1,6 +1,5 @@
 package com.codejudge.backend.controller;
 
-import com.codejudge.backend.dto.MessageResponse;
 import com.codejudge.backend.dto.ProblemRequest;
 import com.codejudge.backend.model.Problem;
 import com.codejudge.backend.security.services.UserDetailsImpl;

@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { useParams } from 'react-router-dom';
 import Editor from '@monaco-editor/react';
-import { Play, Send, CheckCircle, XCircle, Clock } from 'lucide-react';
+import { Play, Send } from 'lucide-react';
 import ProblemService from '../services/problem.service';
 import SubmissionService from '../services/submission.service';
 import { Problem } from '../types/problem';
@@ -13,7 +13,7 @@ const ProblemDetail: React.FC = () => {
     const [language, setLanguage] = useState('java');
     const [output, setOutput] = useState<string>('');
     const [loading, setLoading] = useState(false);
-    const [verdict, setVerdict] = useState<string | null>(null);
+
 
     useEffect(() => {
         if (id) {
@@ -41,7 +41,6 @@ const ProblemDetail: React.FC = () => {
 
     const handleRun = async () => {
         setLoading(true);
-        setVerdict(null);
         try {
             const response = await SubmissionService.runCode({
                 code,
@@ -67,7 +66,6 @@ const ProblemDetail: React.FC = () => {
             setOutput(response.data.output);
             // Simplify: Backend response should contain verdict
             // For now just showing output
-            setVerdict('Submitted');
         } catch (error) {
             setOutput('Submission failed');
         } finally {
