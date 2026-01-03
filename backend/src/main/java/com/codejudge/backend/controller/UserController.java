@@ -22,45 +22,44 @@ import java.util.stream.Collectors;
 @RequestMapping("/api/users")
 public class UserController {
 
-    @Autowired
-    private UserRepository userRepository;
+        @Autowired
+        private UserRepository userRepository;
 
-    @Autowired
-    private SubmissionRepository submissionRepository;
+        @Autowired
+        private SubmissionRepository submissionRepository;
 
-    @GetMapping("/me")
-    public ResponseEntity<?> getCurrentUserProfile(@AuthenticationPrincipal UserDetailsImpl userDetails) {
-        User user = userRepository.findById(userDetails.getId())
-                .orElseThrow(() -> new RuntimeException("User not found"));
+        @GetMapping("/me")
+        public ResponseEntity<?> getCurrentUserProfile(@AuthenticationPrincipal UserDetailsImpl userDetails) {
+                User user = userRepository.findById(userDetails.getId())
+                                .orElseThrow(() -> new RuntimeException("User not found"));
 
-        long solvedCount = submissionRepository.countByUserIdAndVerdict(user.getId(), "ACCEPTED");
-        List<Submission> recentSubmissions = submissionRepository.findByUserId(user.getId());
+                long solvedCount = submissionRepository.countByUserIdAndVerdict(user.getId(), "ACCEPTED");
+                List<Submission> recentSubmissions = submissionRepository.findByUserId(user.getId());
 
-        // Limit to last 10
-        List<UserProfileResponse.SubmissionSummary> recent = recentSubmissions.stream()
-                .sorted((a, b) -> b.getId().compareTo(a.getId())) // assuming higher ID is newer
-                .limit(10)
-                .map(s -> UserProfileResponse.SubmissionSummary.builder()
-                        .id(s.getId())
-                        .problemTitle(s.getProblem().getTitle())
-                        .verdict(s.getVerdict())
-                        .score(s.getScore())
-                        .language(s.getLanguage())
-                        .createdAt(s.getId().toString()) // Using ID as proxy for time for now as check didn't show
-                                                         // createdAt field
-                        .build())
-                .collect(Collectors.toList());
+                // Limit to last 10
+                List<UserProfileResponse.SubmissionSummary> recent = recentSubmissions.stream()
+                                .sorted((a, b) -> b.getId().compareTo(a.getId())) // assuming higher ID is newer
+                                .limit(10)
+                                .map(s -> UserProfileResponse.SubmissionSummary.builder()
+                                                .id(s.getId())
+                                                .problemTitle(s.getProblem().getTitle())
+                                                .verdict(s.getVerdict())
+                                                .score(Long.valueOf(s.getScore() != null ? s.getScore() : 0))
+                                                .language(s.getLanguage())
+                                                .createdAt(s.getId().toString())
+                                                .build())
+                                .collect(Collectors.toList());
 
-        List<String> roles = user.getRole() != null ? List.of(user.getRole().getName()) : List.of();
+                List<String> roles = user.getRole() != null ? List.of(user.getRole().getName()) : List.of();
 
-        return ResponseEntity.ok(UserProfileResponse.builder()
-                .id(user.getId())
-                .username(user.getUsername())
-                .email(user.getEmail())
-                .fullName(user.getFullName())
-                .roles(roles)
-                .problemsSolved(solvedCount)
-                .recentSubmissions(recent)
-                .build());
-    }
+                return ResponseEntity.ok(UserProfileResponse.builder()
+                                .id(user.getId())
+                                .username(user.getUsername())
+                                .email(user.getEmail())
+                                .fullName(user.getFullName())
+                                .roles(roles)
+                                .problemsSolved(solvedCount)
+                                .recentSubmissions(recent)
+                                .build());
+        }
 }
