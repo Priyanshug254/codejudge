@@ -30,7 +30,7 @@ public class UserController {
 
         @GetMapping("/me")
         public ResponseEntity<?> getCurrentUserProfile(@AuthenticationPrincipal UserDetailsImpl userDetails) {
-                User user = userRepository.findById(userDetails.getId())
+                User user = userRepository.findById(java.util.Objects.requireNonNull(userDetails.getId()))
                                 .orElseThrow(() -> new RuntimeException("User not found"));
 
                 long solvedCount = submissionRepository.countByUserIdAndVerdict(user.getId(), "ACCEPTED");

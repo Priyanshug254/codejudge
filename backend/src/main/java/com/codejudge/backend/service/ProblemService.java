@@ -28,7 +28,7 @@ public class ProblemService {
 
     @Transactional
     public Problem createProblem(ProblemRequest request, Long userId) {
-        User user = userRepository.findById(userId)
+        User user = userRepository.findById(java.util.Objects.requireNonNull(userId))
                 .orElseThrow(() -> new RuntimeException("User not found"));
 
         Problem problem = new Problem();
@@ -52,7 +52,7 @@ public class ProblemService {
                 tc.setWeightage(tcRequest.getWeightage());
                 return tc;
             }).collect(Collectors.toList());
-            testCaseRepository.saveAll(testCases);
+            testCaseRepository.saveAll(java.util.Objects.requireNonNull(testCases));
         }
 
         return savedProblem;
@@ -78,6 +78,7 @@ public class ProblemService {
     }
 
     public Problem getProblemById(Long id) {
-        return problemRepository.findById(id).orElseThrow(() -> new RuntimeException("Problem not found"));
+        return problemRepository.findById(java.util.Objects.requireNonNull(id))
+                .orElseThrow(() -> new RuntimeException("Problem not found"));
     }
 }
