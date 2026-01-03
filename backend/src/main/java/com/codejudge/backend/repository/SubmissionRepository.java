@@ -12,6 +12,8 @@ public interface SubmissionRepository extends JpaRepository<Submission, Long> {
 
     List<Submission> findByProblemId(Long problemId);
 
+    long countByUserIdAndVerdict(Long userId, String verdict);
+
     @org.springframework.data.jpa.repository.Query("SELECT new com.codejudge.backend.dto.LeaderboardEntry(u.id, u.username, SUM(s.score), COUNT(DISTINCT s.problem.id)) "
             +
             "FROM Submission s " +

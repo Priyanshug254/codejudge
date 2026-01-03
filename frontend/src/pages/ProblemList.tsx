@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import ProblemService from '../services/problem.service';
 import { Problem } from '../types/problem';
-import { Code, Clock, Database, Plus } from 'lucide-react';
+import { Code, Clock, Database, Plus, User as UserIcon } from 'lucide-react';
 import { useContext } from 'react';
 import { AuthContext } from '../context/AuthContext';
 
@@ -51,48 +51,56 @@ const ProblemList: React.FC = () => {
                             <Plus size={20} />
                             <span>Create Problem</span>
                         </Link>
+                        </Link>
                     )}
-                </div>
+                <Link
+                    to="/profile"
+                    className="ml-2 flex items-center gap-2 bg-gray-700 hover:bg-gray-600 px-4 py-2 rounded-lg transition-colors"
+                >
+                    <UserIcon size={20} />
+                    <span>My Profile</span>
+                </Link>
+            </div>
 
-                {loading ? (
-                    <div className="text-center py-10">Loading...</div>
-                ) : (
-                    <div className="grid gap-4">
-                        {problems.map((problem) => (
-                            <Link
-                                key={problem.id}
-                                to={`/problems/${problem.id}`}
-                                className="group block bg-gray-800/50 hover:bg-gray-800 border border-gray-700 rounded-xl p-6 transition-all"
-                            >
-                                <div className="flex items-start justify-between">
-                                    <div>
-                                        <h3 className="text-xl font-semibold group-hover:text-blue-400 transition-colors">
-                                            {problem.title}
-                                        </h3>
-                                        <div className="flex items-center gap-4 mt-3 text-sm text-gray-400">
-                                            <span className={`px-2 py-0.5 rounded text-xs font-medium ${getDifficultyColor(problem.difficulty)}`}>
-                                                {problem.difficulty}
-                                            </span>
-                                            <div className="flex items-center gap-1">
-                                                <Clock size={14} />
-                                                <span>{problem.timeLimitMs}ms</span>
-                                            </div>
-                                            <div className="flex items-center gap-1">
-                                                <Database size={14} />
-                                                <span>{problem.memoryLimitMb}MB</span>
-                                            </div>
+            {loading ? (
+                <div className="text-center py-10">Loading...</div>
+            ) : (
+                <div className="grid gap-4">
+                    {problems.map((problem) => (
+                        <Link
+                            key={problem.id}
+                            to={`/problems/${problem.id}`}
+                            className="group block bg-gray-800/50 hover:bg-gray-800 border border-gray-700 rounded-xl p-6 transition-all"
+                        >
+                            <div className="flex items-start justify-between">
+                                <div>
+                                    <h3 className="text-xl font-semibold group-hover:text-blue-400 transition-colors">
+                                        {problem.title}
+                                    </h3>
+                                    <div className="flex items-center gap-4 mt-3 text-sm text-gray-400">
+                                        <span className={`px-2 py-0.5 rounded text-xs font-medium ${getDifficultyColor(problem.difficulty)}`}>
+                                            {problem.difficulty}
+                                        </span>
+                                        <div className="flex items-center gap-1">
+                                            <Clock size={14} />
+                                            <span>{problem.timeLimitMs}ms</span>
+                                        </div>
+                                        <div className="flex items-center gap-1">
+                                            <Database size={14} />
+                                            <span>{problem.memoryLimitMb}MB</span>
                                         </div>
                                     </div>
-                                    <div className="opacity-0 group-hover:opacity-100 transition-opacity">
-                                        <Code className="text-blue-500" />
-                                    </div>
                                 </div>
-                            </Link>
-                        ))}
-                    </div>
-                )}
-            </div>
+                                <div className="opacity-0 group-hover:opacity-100 transition-opacity">
+                                    <Code className="text-blue-500" />
+                                </div>
+                            </div>
+                        </Link>
+                    ))}
+                </div>
+            )}
         </div>
+        </div >
     );
 };
 
