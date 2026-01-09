@@ -6,6 +6,8 @@ import CreateProblem from './pages/CreateProblem';
 import ProblemDetail from './pages/ProblemDetail';
 import Leaderboard from './pages/Leaderboard';
 import Profile from './pages/Profile';
+import SubmissionDetail from './pages/SubmissionDetail';
+import AdminDashboard from './pages/AdminDashboard';
 import { AuthProvider } from './context/AuthContext';
 
 function App() {
@@ -21,6 +23,8 @@ function App() {
                     <Route path="/problems/:id" element={<ProblemDetail />} />
                     <Route path="/leaderboard" element={<Leaderboard />} />
                     <Route path="/profile" element={<Profile />} />
+                    <Route path="/submissions/:id" element={<SubmissionDetail />} />
+                    <Route path="/admin" element={<AdminDashboard />} />
                     <Route path="/" element={<Navigate to="/login" />} />                </Routes>
             </AuthProvider>
         </Router>
