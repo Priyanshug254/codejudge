@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from 'react';
+import { Link } from 'react-router-dom';
 import api from '../services/api';
 import { User, Mail, Trophy, Clock, CheckCircle, XCircle } from 'lucide-react';
 
@@ -65,7 +66,7 @@ const Profile: React.FC = () => {
                         <div className="text-gray-500 italic">No submissions yet.</div>
                     ) : (
                         profile.recentSubmissions.map(sub => (
-                            <div key={sub.id} className="bg-gray-800 p-4 rounded-lg flex justify-between items-center border border-gray-700">
+                            <Link to={`/submissions/${sub.id}`} key={sub.id} className="bg-gray-800 p-4 rounded-lg flex justify-between items-center border border-gray-700 hover:border-blue-500 transition-colors cursor-pointer">
                                 <div>
                                     <h3 className="font-semibold text-lg">{sub.problemTitle}</h3>
                                     <span className="text-sm text-gray-400 uppercase">{sub.language}</span>
@@ -76,7 +77,7 @@ const Profile: React.FC = () => {
                                     </span>
                                     {sub.verdict === 'ACCEPTED' ? <CheckCircle className="text-green-500" size={20} /> : <XCircle className="text-red-500" size={20} />}
                                 </div>
-                            </div>
+                            </Link>
                         ))
                     )}
                 </div>

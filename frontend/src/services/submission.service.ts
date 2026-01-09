@@ -10,7 +10,11 @@ class SubmissionService {
     }
 
     submitCode(data: ExecuteRequest) {
-        return api.post<SubmissionResponse>('/submissions', data);
+        return api.post<SubmissionResponse>('/execute/submit', data);
+    }
+
+    getSubmission(id: string) {
+        return api.get(`/submissions/${id}`);
     }
 }
 
