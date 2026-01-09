@@ -2,13 +2,15 @@ import React, { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import ProblemService from '../services/problem.service';
 import { Problem } from '../types/problem';
-import { Code, Clock, Database, Plus, User as UserIcon } from 'lucide-react';
+import { Code, Clock, Database, Plus, User as UserIcon, Search, BarChart3 } from 'lucide-react';
 import { useContext } from 'react';
 import { AuthContext } from '../context/AuthContext';
 
 const ProblemList: React.FC = () => {
     const [problems, setProblems] = useState<Problem[]>([]);
     const [loading, setLoading] = useState(true);
+    const [searchTerm, setSearchTerm] = useState('');
+    const [filterDifficulty, setFilterDifficulty] = useState('ALL');
     const { user } = useContext(AuthContext);
 
     useEffect(() => {
@@ -52,6 +54,15 @@ const ProblemList: React.FC = () => {
                             <span>Create Problem</span>
                         </Link>
                     )}
+                    {(user?.roles.includes('ROLE_ADMIN')) && (
+                        <Link
+                            to="/admin"
+                            className="ml-2 flex items-center gap-2 bg-purple-600 hover:bg-purple-700 px-4 py-2 rounded-lg transition-colors"
+                        >
+                            <BarChart3 size={20} />
+                            <span>Dashboard</span>
+                        </Link>
+                    )}
                     <Link
                         to="/profile"
                         className="ml-2 flex items-center gap-2 bg-gray-700 hover:bg-gray-600 px-4 py-2 rounded-lg transition-colors"
@@ -61,11 +72,39 @@ const ProblemList: React.FC = () => {
                     </Link>
                 </div>
 
+                {/* Search and Filters */}
+                <div className="flex gap-4 mb-6">
+                    <div className="relative flex-1">
+                        <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" size={20} />
+                        <input
+                            type="text"
+                            placeholder="Search problems..."
+                            className="w-full bg-gray-800 border border-gray-700 rounded-lg py-2 pl-10 pr-4 focus:outline-none focus:border-blue-500 text-white"
+                            value={searchTerm}
+                            onChange={(e) => setSearchTerm(e.target.value)}
+                        />
+                    </div>
+                    <select
+                        className="bg-gray-800 border border-gray-700 rounded-lg px-4 py-2 focus:outline-none focus:border-blue-500 text-white"
+                        value={filterDifficulty}
+                        onChange={(e) => setFilterDifficulty(e.target.value)}
+                    >
+                        <option value="ALL">All Difficulties</option>
+                        <option value="EASY">Easy</option>
+                        <option value="MEDIUM">Medium</option>
+                        <option value="HARD">Hard</option>
+                    </select>
+                </div>
+
                 {loading ? (
                     <div className="text-center py-10">Loading...</div>
                 ) : (
                     <div className="grid gap-4">
-                        {problems.map((problem) => (
+                        {problems.filter(p => {
+                            const matchesSearch = p.title.toLowerCase().includes(searchTerm.toLowerCase());
+                            const matchesDiff = filterDifficulty === 'ALL' || p.difficulty === filterDifficulty;
+                            return matchesSearch && matchesDiff;
+                        }).map((problem) => (
                             <Link
                                 key={problem.id}
                                 to={`/problems/${problem.id}`}
