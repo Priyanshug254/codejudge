@@ -10,8 +10,12 @@ class ProblemService {
         return api.get<Problem>(`/problems/${id}`);
     }
 
-    createProblem(problem: ProblemRequest) {
-        return api.post<Problem>('/problems', problem);
+    createProblem(data: ProblemRequest) {
+        return api.post<Problem>('/problems', data);
+    }
+
+    deleteProblem(id: number) {
+        return api.delete(`/problems/${id}`);
     }
 }
 

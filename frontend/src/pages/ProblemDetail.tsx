@@ -1,13 +1,16 @@
-import React, { useEffect, useState } from 'react';
-import { useParams } from 'react-router-dom';
+import React, { useEffect, useState, useContext } from 'react';
+import { useParams, useNavigate } from 'react-router-dom';
 import Editor from '@monaco-editor/react';
-import { Play, Send } from 'lucide-react';
+import { Play, Send, Trash2 } from 'lucide-react';
 import ProblemService from '../services/problem.service';
 import SubmissionService from '../services/submission.service';
 import { Problem } from '../types/problem';
+import { AuthContext } from '../context/AuthContext';
 
 const ProblemDetail: React.FC = () => {
     const { id } = useParams<{ id: string }>();
+    const navigate = useNavigate();
+    const { user } = useContext(AuthContext);
     const [problem, setProblem] = useState<Problem | null>(null);
     const [code, setCode] = useState<string>('// Write your code here');
     const [language, setLanguage] = useState('java');
@@ -73,6 +76,20 @@ const ProblemDetail: React.FC = () => {
         }
     };
 
+    const handleDelete = async () => {
+        if (window.confirm('Are you sure you want to delete this problem?')) {
+            try {
+                if (id) {
+                    await ProblemService.deleteProblem(Number(id));
+                    navigate('/problems');
+                }
+            } catch (error) {
+                console.error("Delete failed", error);
+                alert('Failed to delete problem');
+            }
+        }
+    };
+
     if (!problem) return <div className="text-white p-10">Loading...</div>;
 
     return (
@@ -114,6 +131,14 @@ const ProblemDetail: React.FC = () => {
                     >
                         <Send size={16} /> Submit
                     </button>
+                    {(user?.roles.includes('ROLE_ADMIN') || user?.roles.includes('ROLE_EXAMINER')) && (
+                        <button
+                            onClick={handleDelete}
+                            className="flex items-center gap-2 bg-red-600 hover:bg-red-700 px-4 py-1.5 rounded transition-colors ml-2"
+                        >
+                            <Trash2 size={16} /> Delete
+                        </button>
+                    )}
                 </div>
             </div>
 

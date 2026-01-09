@@ -1,5 +1,6 @@
 package com.codejudge.backend.controller;
 
+import com.codejudge.backend.dto.MessageResponse;
 import com.codejudge.backend.dto.ProblemRequest;
 import com.codejudge.backend.model.Problem;
 import com.codejudge.backend.security.services.UserDetailsImpl;
@@ -36,5 +37,12 @@ public class ProblemController {
             @AuthenticationPrincipal UserDetailsImpl userDetails) {
         Problem problem = problemService.createProblem(request, userDetails.getId());
         return ResponseEntity.ok(problem);
+    }
+
+    @DeleteMapping("/{id}")
+    @PreAuthorize("hasRole('EXAMINER') or hasRole('ADMIN')")
+    public ResponseEntity<?> deleteProblem(@PathVariable Long id) {
+        problemService.deleteProblem(id);
+        return ResponseEntity.ok(new MessageResponse("Problem deleted successfully!"));
     }
 }

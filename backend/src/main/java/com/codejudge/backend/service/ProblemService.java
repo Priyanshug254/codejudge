@@ -81,4 +81,8 @@ public class ProblemService {
         return problemRepository.findById(java.util.Objects.requireNonNull(id))
                 .orElseThrow(() -> new RuntimeException("Problem not found"));
     }
+
+    public void deleteProblem(Long id) {
+        problemRepository.deleteById(java.util.Objects.requireNonNull(id));
+    }
 }
