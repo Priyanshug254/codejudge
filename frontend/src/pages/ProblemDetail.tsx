@@ -1,11 +1,12 @@
 import React, { useEffect, useState, useContext } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import Editor from '@monaco-editor/react';
-import { Play, Send, Trash2 } from 'lucide-react';
+import { Play, Send, Trash2, RotateCcw } from 'lucide-react';
 import ProblemService from '../services/problem.service';
 import SubmissionService from '../services/submission.service';
 import { Problem } from '../types/problem';
 import { AuthContext } from '../context/AuthContext';
+import Confetti from '../components/Confetti';
 
 const ProblemDetail: React.FC = () => {
     const { id } = useParams<{ id: string }>();
@@ -16,7 +17,7 @@ const ProblemDetail: React.FC = () => {
     const [language, setLanguage] = useState('java');
     const [output, setOutput] = useState<string>('');
     const [loading, setLoading] = useState(false);
-
+    const [showConfetti, setShowConfetti] = useState(false);
 
     useEffect(() => {
         if (id) {
@@ -28,10 +29,33 @@ const ProblemDetail: React.FC = () => {
         try {
             const response = await ProblemService.getProblemById(problemId);
             setProblem(response.data);
-            // Set default starter code based on language
-            setCode(getDefaultCode('java'));
+
+            // Check local storage for draft
+            const savedCode = localStorage.getItem(`codejudge_draft_${problemId}_${language}`);
+            if (savedCode) {
+                setCode(savedCode);
+            } else {
+                setCode(getDefaultCode('java'));
+            }
         } catch (error) {
             console.error('Error loading problem', error);
+        }
+    };
+
+    // Save code to local storage whenever it changes
+    useEffect(() => {
+        if (id && code) {
+            localStorage.setItem(`codejudge_draft_${id}_${language}`, code);
+        }
+    }, [code, id, language]);
+
+    const handleReset = () => {
+        if (window.confirm('Reset code to default template? This will lose your current changes.')) {
+            const defaultCode = getDefaultCode(language);
+            setCode(defaultCode);
+            if (id) {
+                localStorage.removeItem(`codejudge_draft_${id}_${language}`);
+            }
         }
     };
 
@@ -60,15 +84,24 @@ const ProblemDetail: React.FC = () => {
 
     const handleSubmit = async () => {
         setLoading(true);
+        setShowConfetti(false); // Reset
         try {
             const response = await SubmissionService.submitCode({
                 code,
                 language,
                 problemId: Number(id)
             });
-            setOutput(response.data.output);
-            // Simplify: Backend response should contain verdict
-            // For now just showing output
+            const data: any = response.data;
+
+            let display = data.output || '';
+            if (data.verdict) {
+                display = `Verdict: ${data.verdict}\n\n${display}`;
+            }
+            setOutput(display);
+
+            if (data.verdict === 'ACCEPTED') {
+                setShowConfetti(true);
+            }
         } catch (error) {
             setOutput('Submission failed');
         } finally {
@@ -94,6 +127,7 @@ const ProblemDetail: React.FC = () => {
 
     return (
         <div className="h-screen flex flex-col bg-gray-900 text-white">
+            <Confetti trigger={showConfetti} />
             {/* Header */}
             <div className="bg-gray-800 border-b border-gray-700 px-6 py-4 flex justify-between items-center">
                 <div>
@@ -117,6 +151,13 @@ const ProblemDetail: React.FC = () => {
                         <option value="python">Python</option>
                         <option value="cpp">C++</option>
                     </select>
+                    <button
+                        onClick={handleReset}
+                        className="p-2 text-gray-400 hover:text-white bg-gray-700 hover:bg-gray-600 rounded transition-colors"
+                        title="Reset Code"
+                    >
+                        <RotateCcw size={18} />
+                    </button>
                     <button
                         onClick={handleRun}
                         disabled={loading}
