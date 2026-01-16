@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import api from '../services/api';
-import { User, Mail, Trophy, Clock, CheckCircle, XCircle } from 'lucide-react';
+import { User, Mail, Trophy, Clock, CheckCircle, XCircle, Award, Shield } from 'lucide-react';
 
 interface SubmissionSummary {
     id: number;
@@ -17,6 +17,7 @@ interface UserProfile {
     email: string;
     fullName: string;
     problemsSolved: number;
+    badges: string[];
     recentSubmissions: SubmissionSummary[];
 }
 
@@ -52,6 +53,26 @@ const Profile: React.FC = () => {
                                 <Trophy size={16} /> {profile.problemsSolved} Problems Solved
                             </div>
                         </div>
+                    </div>
+                </div>
+
+                {/* Badges Section */}
+                <div className="bg-gray-800 p-6 rounded-lg mb-6 border border-gray-700">
+                    <div className="flex justify-between items-center mb-4">
+                        <h2 className="text-xl font-bold">Gamification Badges</h2>
+                        <Award className="text-yellow-500" />
+                    </div>
+                    <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+                        {profile.badges && profile.badges.length > 0 ? (
+                            profile.badges.map((badge, idx) => (
+                                <div key={idx} className="bg-gray-700/50 p-4 rounded-lg flex flex-col items-center justify-center border border-gray-600 hover:border-yellow-500 transition-colors">
+                                    <Shield className={`mb-2 ${idx % 2 === 0 ? 'text-blue-400' : 'text-purple-400'}`} size={32} />
+                                    <span className="font-semibold text-sm">{badge}</span>
+                                </div>
+                            ))
+                        ) : (
+                            <div className="col-span-4 text-center text-gray-400 py-4">No badges earned yet. Solve problems to unlock!</div>
+                        )}
                     </div>
                 </div>
 

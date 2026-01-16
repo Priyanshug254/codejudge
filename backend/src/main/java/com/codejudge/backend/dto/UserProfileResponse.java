@@ -18,6 +18,7 @@ public class UserProfileResponse {
     private String fullName;
     private List<String> roles;
     private Long problemsSolved;
+    private List<String> badges;
     private List<SubmissionSummary> recentSubmissions;
 
     @Data

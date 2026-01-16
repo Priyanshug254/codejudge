@@ -52,6 +52,24 @@ public class UserController {
 
                 List<String> roles = user.getRole() != null ? List.of(user.getRole().getName()) : List.of();
 
+                // Calculate Badges
+                List<String> badges = new java.util.ArrayList<>();
+                if (solvedCount >= 1) {
+                        badges.add("First Step");
+                }
+                if (solvedCount >= 5) {
+                        badges.add("Problem Solver");
+                }
+                if (solvedCount >= 10) {
+                        badges.add("Code Ninja");
+                }
+                // Check language specific badges
+                boolean hasJava = recentSubmissions.stream()
+                                .anyMatch(s -> s.getLanguage().equals("java") && s.getVerdict().equals("ACCEPTED"));
+                if (hasJava) {
+                        badges.add("Java Rookie");
+                }
+
                 return ResponseEntity.ok(UserProfileResponse.builder()
                                 .id(user.getId())
                                 .username(user.getUsername())
@@ -59,6 +77,7 @@ public class UserController {
                                 .fullName(user.getFullName())
                                 .roles(roles)
                                 .problemsSolved(solvedCount)
+                                .badges(badges)
                                 .recentSubmissions(recent)
                                 .build());
         }
