@@ -8,6 +8,7 @@ import Leaderboard from './pages/Leaderboard';
 import Profile from './pages/Profile';
 import SubmissionDetail from './pages/SubmissionDetail';
 import AdminDashboard from './pages/AdminDashboard';
+import Landing from './pages/Landing';
 import { AuthProvider } from './context/AuthContext';
 
 function App() {
@@ -25,7 +26,8 @@ function App() {
                     <Route path="/profile" element={<Profile />} />
                     <Route path="/submissions/:id" element={<SubmissionDetail />} />
                     <Route path="/admin" element={<AdminDashboard />} />
-                    <Route path="/" element={<Navigate to="/login" />} />                </Routes>
+                    <Route path="/" element={<Landing />} />
+                </Routes>
             </AuthProvider>
         </Router>
     );
