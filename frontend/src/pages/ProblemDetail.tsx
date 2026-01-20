@@ -7,6 +7,8 @@ import SubmissionService from '../services/submission.service';
 import { Problem } from '../types/problem';
 import { AuthContext } from '../context/AuthContext';
 import Confetti from '../components/Confetti';
+import AIHint from '../components/AIHint';
+import ShareVictory from '../components/ShareVictory';
 
 const ProblemDetail: React.FC = () => {
     const { id } = useParams<{ id: string }>();
@@ -128,6 +130,12 @@ const ProblemDetail: React.FC = () => {
     return (
         <div className="h-screen flex flex-col bg-gray-900 text-white">
             <Confetti trigger={showConfetti} />
+            {showConfetti && problem && (
+                <div className="absolute top-20 right-6 z-50 bg-gray-800 p-4 rounded-xl border border-green-500 shadow-2xl flex flex-col items-center animate-bounce-in">
+                    <h3 className="text-xl font-bold text-green-400 mb-1">Accepted! 🎉</h3>
+                    <ShareVictory problemTitle={problem.title} language={language} />
+                </div>
+            )}
             {/* Header */}
             <div className="bg-gray-800 border-b border-gray-700 px-6 py-4 flex justify-between items-center">
                 <div>
@@ -191,6 +199,7 @@ const ProblemDetail: React.FC = () => {
                         <h3 className="text-lg font-semibold mb-2">Description</h3>
                         <p className="whitespace-pre-wrap">{problem.description}</p>
                     </div>
+                    <AIHint problemId={Number(id)} />
                 </div>
 
                 {/* Right: Editor & Output */}
