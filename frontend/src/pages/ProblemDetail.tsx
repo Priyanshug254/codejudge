@@ -9,6 +9,7 @@ import { AuthContext } from '../context/AuthContext';
 import Confetti from '../components/Confetti';
 import AIHint from '../components/AIHint';
 import ShareVictory from '../components/ShareVictory';
+import SnippetLibrary from '../components/SnippetLibrary';
 
 const ProblemDetail: React.FC = () => {
     const { id } = useParams<{ id: string }>();
@@ -234,6 +235,9 @@ const ProblemDetail: React.FC = () => {
                     </div>
                 </div>
             </div>
+
+            {/* Snippet Library */}
+            <SnippetLibrary onInsert={(code) => setCode(code)} currentLanguage={language} />
         </div>
     );
 };
