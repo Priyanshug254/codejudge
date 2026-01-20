@@ -2,6 +2,7 @@ import React, { useContext } from 'react';
 import { Link, Navigate } from 'react-router-dom';
 import { Terminal, Code, Trophy, Zap, ChevronRight, Github } from 'lucide-react';
 import { AuthContext } from '../context/AuthContext';
+import ThemeToggle from '../components/ThemeToggle';
 
 const Landing: React.FC = () => {
     const { user } = useContext(AuthContext);
@@ -18,7 +19,8 @@ const Landing: React.FC = () => {
                     <Terminal size={24} />
                     <span>CodeJudge</span>
                 </div>
-                <div className="flex gap-4">
+                <div className="flex gap-4 items-center">
+                    <ThemeToggle />
                     <Link to="/login" className="px-4 py-2 hover:text-blue-400 transition-colors">Login</Link>
                     <Link to="/register" className="px-4 py-2 bg-blue-600 hover:bg-blue-700 rounded-lg transition-colors font-medium">Get Started</Link>
                 </div>

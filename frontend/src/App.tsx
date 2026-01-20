@@ -10,26 +10,29 @@ import SubmissionDetail from './pages/SubmissionDetail';
 import AdminDashboard from './pages/AdminDashboard';
 import Landing from './pages/Landing';
 import { AuthProvider } from './context/AuthContext';
+import { ThemeProvider } from './context/ThemeContext';
 
 function App() {
     return (
         <Router>
-            <AuthProvider>
-                <Routes>
-                    <Route path="/login" element={<Login />} />
-                    <Route path="/register" element={<Register />} />
-                    <Route path="/dashboard" element={<Navigate to="/problems" />} />
-                    <Route path="/problems" element={<ProblemList />} />
-                    <Route path="/problems/create" element={<CreateProblem />} />
-                    <Route path="/problems/:id" element={<ProblemDetail />} />
-                    <Route path="/leaderboard" element={<Leaderboard />} />
-                    <Route path="/profile" element={<Profile />} />
-                    <Route path="/submissions/:id" element={<SubmissionDetail />} />
-                    <Route path="/admin" element={<AdminDashboard />} />
-                    <Route path="/" element={<Landing />} />
-                </Routes>
-            </AuthProvider>
-        </Router>
+            <ThemeProvider>
+                <AuthProvider>
+                    <Routes>
+                        <Route path="/login" element={<Login />} />
+                        <Route path="/register" element={<Register />} />
+                        <Route path="/dashboard" element={<Navigate to="/problems" />} />
+                        <Route path="/problems" element={<ProblemList />} />
+                        <Route path="/problems/create" element={<CreateProblem />} />
+                        <Route path="/problems/:id" element={<ProblemDetail />} />
+                        <Route path="/leaderboard" element={<Leaderboard />} />
+                        <Route path="/profile" element={<Profile />} />
+                        <Route path="/submissions/:id" element={<SubmissionDetail />} />
+                        <Route path="/admin" element={<AdminDashboard />} />
+                        <Route path="/" element={<Landing />} />
+                    </Routes>
+            </ThemeProvider>
+        </AuthProvider>
+        </Router >
     );
 }
 
