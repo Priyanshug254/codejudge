@@ -10,6 +10,9 @@ import Confetti from '../components/Confetti';
 import AIHint from '../components/AIHint';
 import ShareVictory from '../components/ShareVictory';
 import SnippetLibrary from '../components/SnippetLibrary';
+import ExecutionHistory from '../components/ExecutionHistory';
+import KeyboardShortcuts from '../components/KeyboardShortcuts';
+import CodeFormatter from '../components/CodeFormatter';
 
 const ProblemDetail: React.FC = () => {
     const { id } = useParams<{ id: string }>();
@@ -21,6 +24,7 @@ const ProblemDetail: React.FC = () => {
     const [output, setOutput] = useState<string>('');
     const [loading, setLoading] = useState(false);
     const [showConfetti, setShowConfetti] = useState(false);
+    const historyRef = React.useRef<any>(null);
 
     useEffect(() => {
         if (id) {
@@ -77,7 +81,13 @@ const ProblemDetail: React.FC = () => {
                 language,
                 problemId: Number(id)
             });
-            setOutput(response.data.output || response.data.error || 'No output');
+            const outputText = response.data.output || response.data.error || 'No output';
+            setOutput(outputText);
+
+            // Save to history
+            if (historyRef.current?.addRecord) {
+                historyRef.current.addRecord(code, language, outputText);
+            }
         } catch (error) {
             setOutput('Execution failed');
         } finally {
@@ -167,6 +177,24 @@ const ProblemDetail: React.FC = () => {
                     >
                         <RotateCcw size={18} />
                     </button>
+                    <ExecutionHistory
+                        problemId={id || ''}
+                        onReplay={(replayCode, replayLang) => {
+                            setCode(replayCode);
+                            setLanguage(replayLang);
+                        }}
+                        ref={historyRef}
+                    />
+                    <KeyboardShortcuts
+                        onRun={handleRun}
+                        onSubmit={handleSubmit}
+                        onReset={handleReset}
+                    />
+                    <CodeFormatter
+                        code={code}
+                        language={language}
+                        onFormat={(formatted) => setCode(formatted)}
+                    />
                     <button
                         onClick={handleRun}
                         disabled={loading}
