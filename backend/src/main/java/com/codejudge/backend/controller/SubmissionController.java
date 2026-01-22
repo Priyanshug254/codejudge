@@ -76,10 +76,18 @@ public class SubmissionController {
         public ResponseEntity<?> submitCode(@RequestBody ExecuteRequest request,
                         @AuthenticationPrincipal UserDetailsImpl userDetails) {
 
-                User user = userRepository.findById(userDetails.getId())
+                Long userId = userDetails.getId();
+                if (userId == null) {
+                        throw new RuntimeException("User ID is null");
+                }
+                User user = userRepository.findById(userId)
                                 .orElseThrow(() -> new RuntimeException("User not found"));
 
-                Problem problem = problemRepository.findById(request.getProblemId())
+                Long problemId = request.getProblemId();
+                if (problemId == null) {
+                        throw new RuntimeException("Problem ID is null");
+                }
+                Problem problem = problemRepository.findById(problemId)
                                 .orElseThrow(() -> new RuntimeException("Problem not found"));
 
                 // Call Execution Engine
