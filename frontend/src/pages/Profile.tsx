@@ -3,6 +3,7 @@ import { Link } from 'react-router-dom';
 import api from '../services/api';
 import { User, Mail, Trophy, Clock, CheckCircle, XCircle, Award, Shield } from 'lucide-react';
 import SubmissionHeatmap from '../components/SubmissionHeatmap';
+import SubmissionStatsChart from '../components/SubmissionStatsChart';
 
 interface SubmissionSummary {
     id: number;
@@ -59,6 +60,9 @@ const Profile: React.FC = () => {
 
                 {/* Activity Heatmap */}
                 <SubmissionHeatmap />
+
+                {/* Submission Stats Chart */}
+                <SubmissionStatsChart submissions={profile.recentSubmissions} />
 
                 {/* Badges Section */}
                 <div className="bg-gray-800 p-6 rounded-lg mb-6 border border-gray-700">
