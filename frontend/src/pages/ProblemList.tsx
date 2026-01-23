@@ -4,6 +4,7 @@ import ProblemService from '../services/problem.service';
 import { Problem } from '../types/problem';
 import { Code, Clock, Database, Plus, User as UserIcon, Search, BarChart3 } from 'lucide-react';
 import ProblemTags from '../components/ProblemTags';
+import BookmarkedProblems from '../components/BookmarkedProblems';
 import { useContext } from 'react';
 import { AuthContext } from '../context/AuthContext';
 
@@ -72,6 +73,7 @@ const ProblemList: React.FC = () => {
                         <UserIcon size={20} />
                         <span>My Profile</span>
                     </Link>
+                    <BookmarkedProblems />
                 </div>
 
                 {/* Search and Filters */}

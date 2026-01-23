@@ -13,6 +13,9 @@ import SnippetLibrary from '../components/SnippetLibrary';
 import ExecutionHistory from '../components/ExecutionHistory';
 import KeyboardShortcuts from '../components/KeyboardShortcuts';
 import CodeFormatter from '../components/CodeFormatter';
+import BookmarkButton from '../components/BookmarkButton';
+import CodeComparison from '../components/CodeComparison';
+import EditorThemeSelector from '../components/EditorThemeSelector';
 
 const ProblemDetail: React.FC = () => {
     const { id } = useParams<{ id: string }>();
@@ -25,6 +28,7 @@ const ProblemDetail: React.FC = () => {
     const [loading, setLoading] = useState(false);
     const [showConfetti, setShowConfetti] = useState(false);
     const historyRef = React.useRef<any>(null);
+    const [editorTheme, setEditorTheme] = useState('vs-dark');
 
     useEffect(() => {
         if (id) {
@@ -149,9 +153,10 @@ const ProblemDetail: React.FC = () => {
             )}
             {/* Header */}
             <div className="bg-gray-800 border-b border-gray-700 px-6 py-4 flex justify-between items-center">
-                <div>
+                <div className="flex items-center gap-3">
                     <h1 className="text-xl font-bold">{problem.title}</h1>
-                    <div className="flex gap-4 text-sm text-gray-400 mt-1">
+                    <BookmarkButton problemId={problem.id} problemTitle={problem.title} />
+                    <div className="flex gap-4 text-sm text-gray-400">
                         <span className="text-yellow-500">{problem.difficulty}</span>
                         <span>Time: {problem.timeLimitMs}ms</span>
                         <span>Mem: {problem.memoryLimitMb}MB</span>
@@ -195,6 +200,8 @@ const ProblemDetail: React.FC = () => {
                         language={language}
                         onFormat={(formatted) => setCode(formatted)}
                     />
+                    <CodeComparison />
+                    <EditorThemeSelector currentTheme={editorTheme} onThemeChange={setEditorTheme} />
                     <button
                         onClick={handleRun}
                         disabled={loading}
