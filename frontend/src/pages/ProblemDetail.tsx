@@ -16,6 +16,8 @@ import CodeFormatter from '../components/CodeFormatter';
 import BookmarkButton from '../components/BookmarkButton';
 import CodeComparison from '../components/CodeComparison';
 import EditorThemeSelector from '../components/EditorThemeSelector';
+import CodeTemplates from '../components/CodeTemplates';
+import TestCaseVisualizer from '../components/TestCaseVisualizer';
 
 const ProblemDetail: React.FC = () => {
     const { id } = useParams<{ id: string }>();
@@ -202,6 +204,7 @@ const ProblemDetail: React.FC = () => {
                     />
                     <CodeComparison />
                     <EditorThemeSelector currentTheme={editorTheme} onThemeChange={setEditorTheme} />
+                    <CodeTemplates onSelectTemplate={(code, lang) => { setCode(code); setLanguage(lang); }} />
                     <button
                         onClick={handleRun}
                         disabled={loading}
@@ -236,6 +239,7 @@ const ProblemDetail: React.FC = () => {
                         <p className="whitespace-pre-wrap">{problem.description}</p>
                     </div>
                     <AIHint problemId={Number(id)} />
+                    <TestCaseVisualizer problemId={Number(id)} />
                 </div>
 
                 {/* Right: Editor & Output */}
