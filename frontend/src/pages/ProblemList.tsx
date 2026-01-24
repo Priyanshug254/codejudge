@@ -5,6 +5,7 @@ import { Problem } from '../types/problem';
 import { Code, Clock, Database, Plus, User as UserIcon, Search, BarChart3 } from 'lucide-react';
 import ProblemTags from '../components/ProblemTags';
 import BookmarkedProblems from '../components/BookmarkedProblems';
+import Leaderboard from '../components/Leaderboard';
 import { useContext } from 'react';
 import { AuthContext } from '../context/AuthContext';
 
@@ -74,6 +75,7 @@ const ProblemList: React.FC = () => {
                         <span>My Profile</span>
                     </Link>
                     <BookmarkedProblems />
+                    <Leaderboard />
                 </div>
 
                 {/* Search and Filters */}
