@@ -6,6 +6,8 @@ import { Code, Clock, Database, Plus, User as UserIcon, Search, BarChart3 } from
 import ProblemTags from '../components/ProblemTags';
 import BookmarkedProblems from '../components/BookmarkedProblems';
 import Leaderboard from '../components/Leaderboard';
+import StreakCounter from '../components/StreakCounter';
+import RandomProblemBtn from '../components/RandomProblemBtn';
 import { useContext } from 'react';
 import { AuthContext } from '../context/AuthContext';
 
@@ -76,6 +78,8 @@ const ProblemList: React.FC = () => {
                     </Link>
                     <BookmarkedProblems />
                     <Leaderboard />
+                    <StreakCounter />
+                    <RandomProblemBtn problemIds={problems.map(p => p.id)} />
                 </div>
 
                 {/* Search and Filters */}
