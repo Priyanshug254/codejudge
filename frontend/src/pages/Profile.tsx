@@ -6,6 +6,7 @@ import SubmissionHeatmap from '../components/SubmissionHeatmap';
 import SubmissionStatsChart from '../components/SubmissionStatsChart';
 import PerformanceMetrics from '../components/PerformanceMetrics';
 import ProblemProgress from '../components/ProblemProgress';
+import SocialLinks from '../components/SocialLinks';
 
 interface SubmissionSummary {
     id: number;
@@ -71,6 +72,9 @@ const Profile: React.FC = () => {
 
                 {/* Problem Progress */}
                 <ProblemProgress submissions={profile.recentSubmissions} />
+
+                {/* Social Links */}
+                <SocialLinks />
 
                 {/* Badges Section */}
                 <div className="bg-gray-800 p-6 rounded-lg mb-6 border border-gray-700">
