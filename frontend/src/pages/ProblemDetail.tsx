@@ -18,6 +18,11 @@ import CodeComparison from '../components/CodeComparison';
 import EditorThemeSelector from '../components/EditorThemeSelector';
 import CodeTemplates from '../components/CodeTemplates';
 import TestCaseVisualizer from '../components/TestCaseVisualizer';
+import DownloadCode from '../components/DownloadCode';
+import FontSizeControl from '../components/FontSizeControl';
+import ZenModeToggle from '../components/ZenModeToggle';
+import ReadingModeToggle from '../components/ReadingModeToggle';
+import CopyCodeButton from '../components/CopyCodeButton';
 
 const ProblemDetail: React.FC = () => {
     const { id } = useParams<{ id: string }>();
@@ -31,6 +36,9 @@ const ProblemDetail: React.FC = () => {
     const [showConfetti, setShowConfetti] = useState(false);
     const historyRef = React.useRef<any>(null);
     const [editorTheme, setEditorTheme] = useState('vs-dark');
+    const [fontSize, setFontSize] = useState(14);
+    const [isZenMode, setIsZenMode] = useState(false);
+    const [isReadingMode, setIsReadingMode] = useState(false);
 
     useEffect(() => {
         if (id) {
@@ -205,6 +213,10 @@ const ProblemDetail: React.FC = () => {
                     <CodeComparison />
                     <EditorThemeSelector currentTheme={editorTheme} onThemeChange={setEditorTheme} />
                     <CodeTemplates onSelectTemplate={(code, lang) => { setCode(code); setLanguage(lang); }} />
+                    <CopyCodeButton code={code} />
+                    <DownloadCode code={code} language={language} problemTitle={problem.title} />
+                    <FontSizeControl fontSize={fontSize} onFontSizeChange={setFontSize} />
+                    <ZenModeToggle isZenMode={isZenMode} onToggle={() => setIsZenMode(!isZenMode)} />
                     <button
                         onClick={handleRun}
                         disabled={loading}
@@ -233,17 +245,22 @@ const ProblemDetail: React.FC = () => {
             {/* Main Content */}
             <div className="flex-1 flex overflow-hidden">
                 {/* Left: Description */}
-                <div className="w-1/3 border-r border-gray-700 p-6 overflow-y-auto bg-gray-900">
-                    <div className="prose prose-invert max-w-none">
-                        <h3 className="text-lg font-semibold mb-2">Description</h3>
-                        <p className="whitespace-pre-wrap">{problem.description}</p>
+                {!isZenMode && (
+                    <div className="w-1/3 border-r border-gray-700 p-6 overflow-y-auto bg-gray-900">
+                        <div className="flex justify-between items-center mb-2">
+                            <h3 className="text-lg font-semibold">Description</h3>
+                            <ReadingModeToggle isReadingMode={isReadingMode} onToggle={() => setIsReadingMode(!isReadingMode)} />
+                        </div>
+                        <div className={`prose prose-invert max-w-none ${isReadingMode ? 'prose-lg leading-relaxed' : ''}`}>
+                            <p className="whitespace-pre-wrap">{problem.description}</p>
+                        </div>
+                        <AIHint problemId={Number(id)} />
+                        <TestCaseVisualizer problemId={Number(id)} />
                     </div>
-                    <AIHint problemId={Number(id)} />
-                    <TestCaseVisualizer problemId={Number(id)} />
-                </div>
+                )}
 
                 {/* Right: Editor & Output */}
-                <div className="w-2/3 flex flex-col">
+                <div className={`${isZenMode ? 'w-full' : 'w-2/3'} flex flex-col`}>
                     <div className="flex-1">
                         <Editor
                             height="100%"
@@ -253,7 +270,7 @@ const ProblemDetail: React.FC = () => {
                             onChange={(value) => setCode(value || '')}
                             options={{
                                 minimap: { enabled: false },
-                                fontSize: 14,
+                                fontSize: fontSize,
                                 padding: { top: 16 }
                             }}
                         />
