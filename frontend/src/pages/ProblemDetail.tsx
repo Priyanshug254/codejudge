@@ -24,6 +24,7 @@ import ZenModeToggle from '../components/ZenModeToggle';
 import ReadingModeToggle from '../components/ReadingModeToggle';
 import CopyCodeButton from '../components/CopyCodeButton';
 import AICodeReview from '../components/AICodeReview';
+import CollaborativeSession from '../components/CollaborativeSession';
 
 const ProblemDetail: React.FC = () => {
     const { id } = useParams<{ id: string }>();
@@ -219,6 +220,12 @@ const ProblemDetail: React.FC = () => {
                     <DownloadCode code={code} language={language} problemTitle={problem.title} />
                     <FontSizeControl fontSize={fontSize} onFontSizeChange={setFontSize} />
                     <ZenModeToggle isZenMode={isZenMode} onToggle={() => setIsZenMode(!isZenMode)} />
+                    <CollaborativeSession
+                        code={code}
+                        onCodeChange={setCode}
+                        language={language}
+                        problemId={id || ''}
+                    />
                     <button
                         onClick={() => setShowAIReview(!showAIReview)}
                         className={`flex items-center gap-2 px-3 py-1.5 rounded transition-colors ${showAIReview ? 'bg-purple-600 hover:bg-purple-700' : 'bg-gray-700 hover:bg-gray-600'
