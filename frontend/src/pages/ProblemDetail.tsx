@@ -23,6 +23,7 @@ import FontSizeControl from '../components/FontSizeControl';
 import ZenModeToggle from '../components/ZenModeToggle';
 import ReadingModeToggle from '../components/ReadingModeToggle';
 import CopyCodeButton from '../components/CopyCodeButton';
+import AICodeReview from '../components/AICodeReview';
 
 const ProblemDetail: React.FC = () => {
     const { id } = useParams<{ id: string }>();
@@ -39,6 +40,7 @@ const ProblemDetail: React.FC = () => {
     const [fontSize, setFontSize] = useState(14);
     const [isZenMode, setIsZenMode] = useState(false);
     const [isReadingMode, setIsReadingMode] = useState(false);
+    const [showAIReview, setShowAIReview] = useState(false);
 
     useEffect(() => {
         if (id) {
@@ -218,6 +220,14 @@ const ProblemDetail: React.FC = () => {
                     <FontSizeControl fontSize={fontSize} onFontSizeChange={setFontSize} />
                     <ZenModeToggle isZenMode={isZenMode} onToggle={() => setIsZenMode(!isZenMode)} />
                     <button
+                        onClick={() => setShowAIReview(!showAIReview)}
+                        className={`flex items-center gap-2 px-3 py-1.5 rounded transition-colors ${showAIReview ? 'bg-purple-600 hover:bg-purple-700' : 'bg-gray-700 hover:bg-gray-600'
+                            }`}
+                        title="AI Code Review"
+                    >
+                        <span className="text-sm">🤖 AI Review</span>
+                    </button>
+                    <button
                         onClick={handleRun}
                         disabled={loading}
                         className="flex items-center gap-2 bg-gray-700 hover:bg-gray-600 px-4 py-1.5 rounded transition-colors"
@@ -276,18 +286,28 @@ const ProblemDetail: React.FC = () => {
                         />
                     </div>
 
-                    {/* Output Panel */}
+                    {/* Output Panel / AI Review */}
                     <div className="h-48 bg-gray-800 border-t border-gray-700 flex flex-col">
-                        <div className="px-4 py-2 border-b border-gray-700 text-sm font-medium text-gray-400 uppercase">
-                            Output
-                        </div>
-                        <div className="flex-1 p-4 font-mono text-sm overflow-y-auto">
-                            {loading ? (
-                                <div className="text-gray-400 animate-pulse">Running code...</div>
-                            ) : (
-                                <pre className="whitespace-pre-wrap">{output || 'Run your code to see output'}</pre>
-                            )}
-                        </div>
+                        {showAIReview ? (
+                            <AICodeReview
+                                code={code}
+                                language={language}
+                                onClose={() => setShowAIReview(false)}
+                            />
+                        ) : (
+                            <>
+                                <div className="px-4 py-2 border-b border-gray-700 text-sm font-medium text-gray-400 uppercase">
+                                    Output
+                                </div>
+                                <div className="flex-1 p-4 font-mono text-sm overflow-y-auto">
+                                    {loading ? (
+                                        <div className="text-gray-400 animate-pulse">Running code...</div>
+                                    ) : (
+                                        <pre className="whitespace-pre-wrap">{output || 'Run your code to see output'}</pre>
+                                    )}
+                                </div>
+                            </>
+                        )}
                     </div>
                 </div>
             </div>
