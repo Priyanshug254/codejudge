@@ -25,6 +25,7 @@ import ReadingModeToggle from '../components/ReadingModeToggle';
 import CopyCodeButton from '../components/CopyCodeButton';
 import AICodeReview from '../components/AICodeReview';
 import CollaborativeSession from '../components/CollaborativeSession';
+import PerformanceVisualizer from '../components/PerformanceVisualizer';
 
 const ProblemDetail: React.FC = () => {
     const { id } = useParams<{ id: string }>();
@@ -42,6 +43,7 @@ const ProblemDetail: React.FC = () => {
     const [isZenMode, setIsZenMode] = useState(false);
     const [isReadingMode, setIsReadingMode] = useState(false);
     const [showAIReview, setShowAIReview] = useState(false);
+    const [showPerformance, setShowPerformance] = useState(false);
 
     useEffect(() => {
         if (id) {
@@ -235,6 +237,14 @@ const ProblemDetail: React.FC = () => {
                         <span className="text-sm">🤖 AI Review</span>
                     </button>
                     <button
+                        onClick={() => setShowPerformance(!showPerformance)}
+                        className={`flex items-center gap-2 px-3 py-1.5 rounded transition-colors ${showPerformance ? 'bg-blue-600 hover:bg-blue-700' : 'bg-gray-700 hover:bg-gray-600'
+                            }`}
+                        title="Performance Analysis"
+                    >
+                        <span className="text-sm">📊 Performance</span>
+                    </button>
+                    <button
                         onClick={handleRun}
                         disabled={loading}
                         className="flex items-center gap-2 bg-gray-700 hover:bg-gray-600 px-4 py-1.5 rounded transition-colors"
@@ -293,13 +303,19 @@ const ProblemDetail: React.FC = () => {
                         />
                     </div>
 
-                    {/* Output Panel / AI Review */}
+                    {/* Output Panel / AI Review / Performance */}
                     <div className="h-48 bg-gray-800 border-t border-gray-700 flex flex-col">
                         {showAIReview ? (
                             <AICodeReview
                                 code={code}
                                 language={language}
                                 onClose={() => setShowAIReview(false)}
+                            />
+                        ) : showPerformance ? (
+                            <PerformanceVisualizer
+                                code={code}
+                                language={language}
+                                onClose={() => setShowPerformance(false)}
                             />
                         ) : (
                             <>
