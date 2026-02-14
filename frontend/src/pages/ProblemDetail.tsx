@@ -1,7 +1,7 @@
 import React, { useEffect, useState, useContext } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import Editor from '@monaco-editor/react';
-import { Play, Send, Trash2, RotateCcw, Wind, Edit3 } from 'lucide-react';
+import { Play, Send, Trash2, RotateCcw, Wind, Edit3, Zap } from 'lucide-react';
 import ProblemService from '../services/problem.service';
 import SubmissionService from '../services/submission.service';
 import { Problem } from '../types/problem';
@@ -29,6 +29,7 @@ import PerformanceVisualizer from '../components/PerformanceVisualizer';
 import VoiceControl from '../components/VoiceControl';
 import ZenBreath from '../components/ZenBreath';
 import ProblemScratchpad from '../components/ProblemScratchpad';
+import PowerMode from '../components/PowerMode';
 
 const ProblemDetail: React.FC = () => {
     const { id } = useParams<{ id: string }>();
@@ -49,6 +50,7 @@ const ProblemDetail: React.FC = () => {
     const [showPerformance, setShowPerformance] = useState(false);
     const [showZenBreath, setShowZenBreath] = useState(false);
     const [showScratchpad, setShowScratchpad] = useState(false);
+    const [isPowerMode, setIsPowerMode] = useState(false);
 
     useEffect(() => {
         if (id) {
@@ -241,6 +243,14 @@ const ProblemDetail: React.FC = () => {
                     >
                         <Edit3 size={18} />
                     </button>
+                    <button
+                        onClick={() => setIsPowerMode(!isPowerMode)}
+                        className={`p-1.5 rounded-full transition-colors ${isPowerMode ? 'bg-red-600 animate-pulse text-white shadow-[0_0_15px_rgba(239,68,68,0.6)]' : 'bg-gray-700 hover:bg-gray-600 text-red-500'
+                            }`}
+                        title="Power Mode 💥"
+                    >
+                        <Zap size={18} />
+                    </button>
                     <CollaborativeSession
                         code={code}
                         onCodeChange={setCode}
@@ -375,6 +385,9 @@ const ProblemDetail: React.FC = () => {
 
             {/* Snippet Library */}
             <SnippetLibrary onInsert={(code) => setCode(code)} currentLanguage={language} />
+
+            {/* Power Mode Overlay */}
+            <PowerMode isActive={isPowerMode} onClose={() => setIsPowerMode(false)} />
         </div>
     );
 };
