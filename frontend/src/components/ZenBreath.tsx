@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Wind, X, Pause, Play, RotateCcw } from 'lucide-react';
+import { X, Pause, Play, RotateCcw } from 'lucide-react';
 
 interface ZenBreathProps {
     onClose: () => void;
@@ -12,7 +12,7 @@ const ZenBreath: React.FC<ZenBreathProps> = ({ onClose }) => {
     const [totalCycles, setTotalCycles] = useState(0);
 
     useEffect(() => {
-        let interval: NodeJS.Timeout;
+        let interval: any;
 
         if (isActive) {
             interval = setInterval(() => {
@@ -113,8 +113,8 @@ const ZenBreath: React.FC<ZenBreathProps> = ({ onClose }) => {
                     <button
                         onClick={() => setIsActive(!isActive)}
                         className={`flex items-center gap-2 px-6 py-3 rounded-full font-medium transition-all ${isActive
-                                ? 'bg-gray-800 hover:bg-gray-700 text-white border border-gray-700'
-                                : 'bg-cyan-600 hover:bg-cyan-500 text-white shadow-lg shadow-cyan-500/20'
+                            ? 'bg-gray-800 hover:bg-gray-700 text-white border border-gray-700'
+                            : 'bg-cyan-600 hover:bg-cyan-500 text-white shadow-lg shadow-cyan-500/20'
                             }`}
                     >
                         {isActive ? <><Pause size={18} /> Pause</> : <><Play size={18} /> Start</>}

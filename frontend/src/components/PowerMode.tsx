@@ -1,5 +1,5 @@
 import React, { useEffect, useState, useRef } from 'react';
-import { Zap, X, Flame } from 'lucide-react';
+import { Zap, Flame } from 'lucide-react';
 
 interface Particle {
     x: number;
@@ -22,8 +22,7 @@ const PowerMode: React.FC<PowerModeProps> = ({ isActive, onClose }) => {
     const [maxCombo, setMaxCombo] = useState(0);
     const particlesRef = useRef<Particle[]>([]);
     const lastKeyTimeRef = useRef<number>(Date.now());
-    const comboTimeoutRef = useRef<NodeJS.Timeout | null>(null);
-    const shakeRef = useRef<{ x: number, y: number }>({ x: 0, y: 0 });
+    const comboTimeoutRef = useRef<any>(null);
 
     useEffect(() => {
         if (!isActive) return;
