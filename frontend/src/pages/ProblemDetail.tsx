@@ -1,7 +1,7 @@
 import React, { useEffect, useState, useContext } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import Editor from '@monaco-editor/react';
-import { Play, Send, Trash2, RotateCcw } from 'lucide-react';
+import { Play, Send, Trash2, RotateCcw, Wind } from 'lucide-react';
 import ProblemService from '../services/problem.service';
 import SubmissionService from '../services/submission.service';
 import { Problem } from '../types/problem';
@@ -26,6 +26,8 @@ import CopyCodeButton from '../components/CopyCodeButton';
 import AICodeReview from '../components/AICodeReview';
 import CollaborativeSession from '../components/CollaborativeSession';
 import PerformanceVisualizer from '../components/PerformanceVisualizer';
+import VoiceControl from '../components/VoiceControl';
+import ZenBreath from '../components/ZenBreath';
 
 const ProblemDetail: React.FC = () => {
     const { id } = useParams<{ id: string }>();
@@ -44,6 +46,7 @@ const ProblemDetail: React.FC = () => {
     const [isReadingMode, setIsReadingMode] = useState(false);
     const [showAIReview, setShowAIReview] = useState(false);
     const [showPerformance, setShowPerformance] = useState(false);
+    const [showZenBreath, setShowZenBreath] = useState(false);
 
     useEffect(() => {
         if (id) {
@@ -222,11 +225,27 @@ const ProblemDetail: React.FC = () => {
                     <DownloadCode code={code} language={language} problemTitle={problem.title} />
                     <FontSizeControl fontSize={fontSize} onFontSizeChange={setFontSize} />
                     <ZenModeToggle isZenMode={isZenMode} onToggle={() => setIsZenMode(!isZenMode)} />
+                    <button
+                        onClick={() => setShowZenBreath(true)}
+                        className="p-1.5 rounded-full bg-gray-700 hover:bg-gray-600 text-cyan-400 transition-colors"
+                        title="Zen Breath Mode"
+                    >
+                        <Wind size={18} />
+                    </button>
                     <CollaborativeSession
                         code={code}
                         onCodeChange={setCode}
                         language={language}
                         problemId={id || ''}
+                    />
+                    <VoiceControl
+                        onRun={handleRun}
+                        onSubmit={handleSubmit}
+                        onClear={() => setCode('')}
+                        onFormat={() => {
+                            // Trigger format via CodeFormatter if possible, or just log
+                            console.log('Voice format triggered');
+                        }}
                     />
                     <button
                         onClick={() => setShowAIReview(!showAIReview)}
@@ -334,6 +353,11 @@ const ProblemDetail: React.FC = () => {
                     </div>
                 </div>
             </div>
+
+            {/* Zen Breath Modal */}
+            {showZenBreath && (
+                <ZenBreath onClose={() => setShowZenBreath(false)} />
+            )}
 
             {/* Snippet Library */}
             <SnippetLibrary onInsert={(code) => setCode(code)} currentLanguage={language} />
