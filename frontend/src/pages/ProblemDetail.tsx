@@ -30,6 +30,7 @@ import VoiceControl from '../components/VoiceControl';
 import ZenBreath from '../components/ZenBreath';
 import ProblemScratchpad from '../components/ProblemScratchpad';
 import PowerMode from '../components/PowerMode';
+import { formatCode } from '../utils/codeFormatter';
 
 const ProblemDetail: React.FC = () => {
     const { id } = useParams<{ id: string }>();
@@ -262,8 +263,8 @@ const ProblemDetail: React.FC = () => {
                         onSubmit={handleSubmit}
                         onClear={() => setCode('')}
                         onFormat={() => {
-                            // Trigger format via CodeFormatter if possible, or just log
-                            console.log('Voice format triggered');
+                            const formatted = formatCode(code, language);
+                            setCode(formatted);
                         }}
                     />
                     <button
