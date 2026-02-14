@@ -1,7 +1,7 @@
 import React, { useEffect, useState, useContext } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import Editor from '@monaco-editor/react';
-import { Play, Send, Trash2, RotateCcw, Wind } from 'lucide-react';
+import { Play, Send, Trash2, RotateCcw, Wind, Edit3 } from 'lucide-react';
 import ProblemService from '../services/problem.service';
 import SubmissionService from '../services/submission.service';
 import { Problem } from '../types/problem';
@@ -28,6 +28,7 @@ import CollaborativeSession from '../components/CollaborativeSession';
 import PerformanceVisualizer from '../components/PerformanceVisualizer';
 import VoiceControl from '../components/VoiceControl';
 import ZenBreath from '../components/ZenBreath';
+import ProblemScratchpad from '../components/ProblemScratchpad';
 
 const ProblemDetail: React.FC = () => {
     const { id } = useParams<{ id: string }>();
@@ -47,6 +48,7 @@ const ProblemDetail: React.FC = () => {
     const [showAIReview, setShowAIReview] = useState(false);
     const [showPerformance, setShowPerformance] = useState(false);
     const [showZenBreath, setShowZenBreath] = useState(false);
+    const [showScratchpad, setShowScratchpad] = useState(false);
 
     useEffect(() => {
         if (id) {
@@ -232,6 +234,13 @@ const ProblemDetail: React.FC = () => {
                     >
                         <Wind size={18} />
                     </button>
+                    <button
+                        onClick={() => setShowScratchpad(true)}
+                        className="p-1.5 rounded-full bg-gray-700 hover:bg-gray-600 text-yellow-400 transition-colors"
+                        title="Problem Scratchpad"
+                    >
+                        <Edit3 size={18} />
+                    </button>
                     <CollaborativeSession
                         code={code}
                         onCodeChange={setCode}
@@ -357,6 +366,11 @@ const ProblemDetail: React.FC = () => {
             {/* Zen Breath Modal */}
             {showZenBreath && (
                 <ZenBreath onClose={() => setShowZenBreath(false)} />
+            )}
+
+            {/* Problem Scratchpad Modal */}
+            {showScratchpad && (
+                <ProblemScratchpad onClose={() => setShowScratchpad(false)} />
             )}
 
             {/* Snippet Library */}
