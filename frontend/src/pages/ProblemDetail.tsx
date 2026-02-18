@@ -1,7 +1,7 @@
 import React, { useEffect, useState, useContext } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import Editor from '@monaco-editor/react';
-import { Play, Send, Trash2, RotateCcw, Wind, Edit3, Zap } from 'lucide-react';
+import { Play, Send, Trash2, RotateCcw, Wind, Edit3, Zap, Brain } from 'lucide-react';
 import ProblemService from '../services/problem.service';
 import SubmissionService from '../services/submission.service';
 import { Problem } from '../types/problem';
@@ -31,6 +31,7 @@ import ZenBreath from '../components/ZenBreath';
 import ProblemScratchpad from '../components/ProblemScratchpad';
 import PowerMode from '../components/PowerMode';
 import { formatCode } from '../utils/codeFormatter';
+import AICodeExplainer from '../components/AICodeExplainer';
 
 const ProblemDetail: React.FC = () => {
     const { id } = useParams<{ id: string }>();
@@ -52,6 +53,7 @@ const ProblemDetail: React.FC = () => {
     const [showZenBreath, setShowZenBreath] = useState(false);
     const [showScratchpad, setShowScratchpad] = useState(false);
     const [isPowerMode, setIsPowerMode] = useState(false);
+    const [showExplainer, setShowExplainer] = useState(false);
 
     useEffect(() => {
         if (id) {
@@ -268,6 +270,14 @@ const ProblemDetail: React.FC = () => {
                         }}
                     />
                     <button
+                        onClick={() => setShowExplainer(!showExplainer)}
+                        className={`flex items-center gap-2 px-3 py-1.5 rounded transition-colors ${showExplainer ? 'bg-purple-600 hover:bg-purple-700' : 'bg-gray-700 hover:bg-gray-600'
+                            }`}
+                        title="AI Code Explainer"
+                    >
+                        <Brain size={16} /> <span className="text-sm">Explain Logic</span>
+                    </button>
+                    <button
                         onClick={() => setShowAIReview(!showAIReview)}
                         className={`flex items-center gap-2 px-3 py-1.5 rounded transition-colors ${showAIReview ? 'bg-purple-600 hover:bg-purple-700' : 'bg-gray-700 hover:bg-gray-600'
                             }`}
@@ -349,6 +359,12 @@ const ProblemDetail: React.FC = () => {
                                 code={code}
                                 language={language}
                                 onClose={() => setShowAIReview(false)}
+                            />
+                        ) : showExplainer ? (
+                            <AICodeExplainer
+                                code={code}
+                                language={language}
+                                onClose={() => setShowExplainer(false)}
                             />
                         ) : showPerformance ? (
                             <PerformanceVisualizer
