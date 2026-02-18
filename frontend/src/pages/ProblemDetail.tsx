@@ -1,7 +1,7 @@
 import React, { useEffect, useState, useContext } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import Editor from '@monaco-editor/react';
-import { Play, Send, Trash2, RotateCcw, Wind, Edit3, Zap, Brain, BookMarked } from 'lucide-react';
+import { Play, Send, Trash2, RotateCcw, Wind, Edit3, Zap, Brain, BookMarked, ShieldAlert } from 'lucide-react';
 import ProblemService from '../services/problem.service';
 import SubmissionService from '../services/submission.service';
 import { Problem } from '../types/problem';
@@ -32,6 +32,7 @@ import ProblemScratchpad from '../components/ProblemScratchpad';
 import PowerMode from '../components/PowerMode';
 import FocusSounds from '../components/FocusSounds';
 import ProblemJournal from '../components/ProblemJournal';
+import InterviewSimulator from '../components/InterviewSimulator';
 import { formatCode } from '../utils/codeFormatter';
 import AICodeExplainer from '../components/AICodeExplainer';
 import KeybindingsToggle, { KeybindingMode } from '../components/KeybindingsToggle';
@@ -59,6 +60,7 @@ const ProblemDetail: React.FC = () => {
     const [showExplainer, setShowExplainer] = useState(false);
     const [keybindingMode, setKeybindingMode] = useState<KeybindingMode>('standard');
     const [showJournal, setShowJournal] = useState(false);
+    const [isInterviewMode, setIsInterviewMode] = useState(false);
 
     useEffect(() => {
         if (id) {
@@ -277,26 +279,35 @@ const ProblemDetail: React.FC = () => {
                         }}
                     />
                     <button
-                        onClick={() => setShowExplainer(!showExplainer)}
+                        onClick={() => {
+                            if (!isInterviewMode) setShowExplainer(!showExplainer);
+                        }}
+                        disabled={isInterviewMode}
                         className={`flex items-center gap-2 px-3 py-1.5 rounded transition-colors ${showExplainer ? 'bg-purple-600 hover:bg-purple-700' : 'bg-gray-700 hover:bg-gray-600'
-                            }`}
-                        title="AI Code Explainer"
+                            } ${isInterviewMode ? 'opacity-50 cursor-not-allowed grayscale' : ''}`}
+                        title={isInterviewMode ? "Disabled during Mock Interview" : "AI Code Explainer"}
                     >
                         <Brain size={16} /> <span className="text-sm">Explain Logic</span>
                     </button>
                     <button
-                        onClick={() => setShowAIReview(!showAIReview)}
+                        onClick={() => {
+                            if (!isInterviewMode) setShowAIReview(!showAIReview);
+                        }}
+                        disabled={isInterviewMode}
                         className={`flex items-center gap-2 px-3 py-1.5 rounded transition-colors ${showAIReview ? 'bg-purple-600 hover:bg-purple-700' : 'bg-gray-700 hover:bg-gray-600'
-                            }`}
-                        title="AI Code Review"
+                            } ${isInterviewMode ? 'opacity-50 cursor-not-allowed grayscale' : ''}`}
+                        title={isInterviewMode ? "Disabled during Mock Interview" : "AI Code Review"}
                     >
                         <span className="text-sm">🤖 AI Review</span>
                     </button>
                     <button
-                        onClick={() => setShowPerformance(!showPerformance)}
+                        onClick={() => {
+                            if (!isInterviewMode) setShowPerformance(!showPerformance);
+                        }}
+                        disabled={isInterviewMode}
                         className={`flex items-center gap-2 px-3 py-1.5 rounded transition-colors ${showPerformance ? 'bg-blue-600 hover:bg-blue-700' : 'bg-gray-700 hover:bg-gray-600'
-                            }`}
-                        title="Performance Analysis"
+                            } ${isInterviewMode ? 'opacity-50 cursor-not-allowed grayscale' : ''}`}
+                        title={isInterviewMode ? "Disabled during Mock Interview" : "Performance Analysis"}
                     >
                         <span className="text-sm">📊 Performance</span>
                     </button>
@@ -307,6 +318,14 @@ const ProblemDetail: React.FC = () => {
                         title="Problem Journal"
                     >
                         <BookMarked size={16} /> <span className="text-sm">Journal</span>
+                    </button>
+                    <button
+                        onClick={() => setIsInterviewMode(!isInterviewMode)}
+                        className={`flex items-center gap-2 px-3 py-1.5 rounded transition-all ${isInterviewMode ? 'bg-red-600 animate-pulse text-white shadow-[0_0_15px_rgba(239,68,68,0.4)]' : 'bg-gray-700 hover:bg-gray-600 text-red-500'
+                            }`}
+                        title="Mock Interview Simulator"
+                    >
+                        <ShieldAlert size={16} /> <span className="text-sm">Mock Interview</span>
                     </button>
                     <button
                         onClick={handleRun}
@@ -431,6 +450,9 @@ const ProblemDetail: React.FC = () => {
 
             {/* Power Mode Overlay */}
             <PowerMode isActive={isPowerMode} onClose={() => setIsPowerMode(false)} />
+
+            {/* Interview Simulator */}
+            <InterviewSimulator isActive={isInterviewMode} onToggle={(state) => setIsInterviewMode(state)} />
         </div>
     );
 };
