@@ -232,6 +232,7 @@ const ProblemDetail: React.FC = () => {
                     <CodeTemplates onSelectTemplate={(code, lang) => { setCode(code); setLanguage(lang); }} />
                     <CopyCodeButton code={code} />
                     <KeybindingsToggle currentMode={keybindingMode} onModeChange={setKeybindingMode} />
+                    <FocusSounds />
                     <DownloadCode code={code} language={language} problemTitle={problem.title} />
                     <FontSizeControl fontSize={fontSize} onFontSizeChange={setFontSize} />
                     <ZenModeToggle isZenMode={isZenMode} onToggle={() => setIsZenMode(!isZenMode)} />
