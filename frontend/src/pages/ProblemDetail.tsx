@@ -1,7 +1,7 @@
 import React, { useEffect, useState, useContext } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import Editor from '@monaco-editor/react';
-import { Play, Send, Trash2, RotateCcw, Wind, Edit3, Zap, Brain } from 'lucide-react';
+import { Play, Send, Trash2, RotateCcw, Wind, Edit3, Zap, Brain, BookMarked } from 'lucide-react';
 import ProblemService from '../services/problem.service';
 import SubmissionService from '../services/submission.service';
 import { Problem } from '../types/problem';
@@ -30,6 +30,8 @@ import VoiceControl from '../components/VoiceControl';
 import ZenBreath from '../components/ZenBreath';
 import ProblemScratchpad from '../components/ProblemScratchpad';
 import PowerMode from '../components/PowerMode';
+import FocusSounds from '../components/FocusSounds';
+import ProblemJournal from '../components/ProblemJournal';
 import { formatCode } from '../utils/codeFormatter';
 import AICodeExplainer from '../components/AICodeExplainer';
 import KeybindingsToggle, { KeybindingMode } from '../components/KeybindingsToggle';
@@ -56,6 +58,7 @@ const ProblemDetail: React.FC = () => {
     const [isPowerMode, setIsPowerMode] = useState(false);
     const [showExplainer, setShowExplainer] = useState(false);
     const [keybindingMode, setKeybindingMode] = useState<KeybindingMode>('standard');
+    const [showJournal, setShowJournal] = useState(false);
 
     useEffect(() => {
         if (id) {
@@ -298,6 +301,14 @@ const ProblemDetail: React.FC = () => {
                         <span className="text-sm">📊 Performance</span>
                     </button>
                     <button
+                        onClick={() => setShowJournal(!showJournal)}
+                        className={`flex items-center gap-2 px-3 py-1.5 rounded transition-colors ${showJournal ? 'bg-emerald-600 hover:bg-emerald-700' : 'bg-gray-700 hover:bg-gray-600'
+                            }`}
+                        title="Problem Journal"
+                    >
+                        <BookMarked size={16} /> <span className="text-sm">Journal</span>
+                    </button>
+                    <button
                         onClick={handleRun}
                         disabled={loading}
                         className="flex items-center gap-2 bg-gray-700 hover:bg-gray-600 px-4 py-1.5 rounded transition-colors"
@@ -396,6 +407,13 @@ const ProblemDetail: React.FC = () => {
                         )}
                     </div>
                 </div>
+
+                {/* Left Panel: Problem Journal */}
+                {showJournal && (
+                    <div className="w-80 shadow-2xl z-20 h-full">
+                        <ProblemJournal problemId={id || ''} onClose={() => setShowJournal(false)} />
+                    </div>
+                )}
             </div>
 
             {/* Zen Breath Modal */}
