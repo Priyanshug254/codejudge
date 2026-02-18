@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import { useState, useEffect, useImperativeHandle, forwardRef } from 'react';
 import { History, Clock, Play, Trash2, ChevronDown, ChevronUp } from 'lucide-react';
 
 interface ExecutionRecord {
@@ -10,10 +10,16 @@ interface ExecutionRecord {
     problemId: string;
 }
 
-const ExecutionHistory: React.FC<{
+interface ExecutionHistoryProps {
     problemId: string;
     onReplay: (code: string, language: string) => void;
-}> = ({ problemId, onReplay }) => {
+}
+
+export interface ExecutionHistoryHandle {
+    addRecord: (code: string, language: string, output: string) => void;
+}
+
+const ExecutionHistory = forwardRef<ExecutionHistoryHandle, ExecutionHistoryProps>(({ problemId, onReplay }, ref) => {
     const [isOpen, setIsOpen] = useState(false);
     const [history, setHistory] = useState<ExecutionRecord[]>([]);
     const [expandedId, setExpandedId] = useState<string | null>(null);
@@ -38,7 +44,9 @@ const ExecutionHistory: React.FC<{
             timestamp: new Date().toLocaleString(),
             problemId
         };
-        const updated = [record, ...history].slice(0, 10); // Keep last 10
+        const saved = localStorage.getItem(`codejudge_history_${problemId}`);
+        const currentHistory = saved ? JSON.parse(saved) : [];
+        const updated = [record, ...currentHistory].slice(0, 10); // Keep last 10
         localStorage.setItem(`codejudge_history_${problemId}`, JSON.stringify(updated));
         setHistory(updated);
     };
@@ -51,7 +59,7 @@ const ExecutionHistory: React.FC<{
     };
 
     // Expose addRecord to parent
-    React.useImperativeHandle(React.useRef(), () => ({
+    useImperativeHandle(ref, () => ({
         addRecord
     }));
 
@@ -149,6 +157,6 @@ const ExecutionHistory: React.FC<{
             </div>
         </div>
     );
-};
+});
 
 export default ExecutionHistory;

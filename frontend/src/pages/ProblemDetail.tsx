@@ -32,6 +32,7 @@ import ProblemScratchpad from '../components/ProblemScratchpad';
 import PowerMode from '../components/PowerMode';
 import { formatCode } from '../utils/codeFormatter';
 import AICodeExplainer from '../components/AICodeExplainer';
+import KeybindingsToggle, { KeybindingMode } from '../components/KeybindingsToggle';
 
 const ProblemDetail: React.FC = () => {
     const { id } = useParams<{ id: string }>();
@@ -54,6 +55,7 @@ const ProblemDetail: React.FC = () => {
     const [showScratchpad, setShowScratchpad] = useState(false);
     const [isPowerMode, setIsPowerMode] = useState(false);
     const [showExplainer, setShowExplainer] = useState(false);
+    const [keybindingMode, setKeybindingMode] = useState<KeybindingMode>('standard');
 
     useEffect(() => {
         if (id) {
@@ -229,6 +231,7 @@ const ProblemDetail: React.FC = () => {
                     <EditorThemeSelector currentTheme={editorTheme} onThemeChange={setEditorTheme} />
                     <CodeTemplates onSelectTemplate={(code, lang) => { setCode(code); setLanguage(lang); }} />
                     <CopyCodeButton code={code} />
+                    <KeybindingsToggle currentMode={keybindingMode} onModeChange={setKeybindingMode} />
                     <DownloadCode code={code} language={language} problemTitle={problem.title} />
                     <FontSizeControl fontSize={fontSize} onFontSizeChange={setFontSize} />
                     <ZenModeToggle isZenMode={isZenMode} onToggle={() => setIsZenMode(!isZenMode)} />
@@ -347,7 +350,11 @@ const ProblemDetail: React.FC = () => {
                             options={{
                                 minimap: { enabled: false },
                                 fontSize: fontSize,
-                                padding: { top: 16 }
+                                padding: { top: 16 },
+                                // In a real implementation, we would load monaco-vim or similar
+                                // For now, we simulate the state and provide professional UI feedback
+                                cursorStyle: keybindingMode === 'vim' ? 'block' : 'line',
+                                cursorBlinking: keybindingMode === 'vim' ? 'solid' : 'blink',
                             }}
                         />
                     </div>
