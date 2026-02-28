@@ -442,8 +442,13 @@ const ProblemDetail: React.FC = () => {
 
             {/* Problem Scratchpad Modal */}
             {showScratchpad && (
-                <ProblemScratchpad onClose={() => setShowScratchpad(false)} />
+                <ProblemScratchpad
+                    problemId={id || "0"}
+                    username={user?.username || "anonymous"}
+                    onClose={() => setShowScratchpad(false)}
+                />
             )}
+
 
             {/* Snippet Library */}
             <SnippetLibrary onInsert={(code) => setCode(code)} currentLanguage={language} />
@@ -452,7 +457,14 @@ const ProblemDetail: React.FC = () => {
             <PowerMode isActive={isPowerMode} onClose={() => setIsPowerMode(false)} />
 
             {/* Interview Simulator */}
-            <InterviewSimulator isActive={isInterviewMode} onToggle={(state) => setIsInterviewMode(state)} />
+            <InterviewSimulator
+                isActive={isInterviewMode}
+                onToggle={(state) => setIsInterviewMode(state)}
+                code={code}
+                language={language}
+                problemDescription={problem.description}
+            />
+
         </div>
     );
 };

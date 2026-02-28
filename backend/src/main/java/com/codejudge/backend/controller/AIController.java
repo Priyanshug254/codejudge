@@ -15,6 +15,9 @@ public class AIController {
     @Autowired
     private AIService aiService;
 
+    @Autowired
+    private com.codejudge.backend.service.InterviewService interviewService;
+
     @PostMapping("/analyze")
     public ResponseEntity<?> analyze(@RequestBody Map<String, String> request) {
         String code = request.get("code");
@@ -22,5 +25,15 @@ public class AIController {
         String language = request.get("language");
 
         return ResponseEntity.ok(aiService.analyzeCode(code, problemDescription, language));
+    }
+
+    @PostMapping("/interview-question")
+    public ResponseEntity<?> getInterviewQuestion(@RequestBody Map<String, String> request) {
+        String code = request.get("code");
+        String problemDescription = request.get("problemDescription");
+        String language = request.get("language");
+
+        String question = interviewService.generateQuestion(code, problemDescription, language);
+        return ResponseEntity.ok(Map.of("question", question));
     }
 }

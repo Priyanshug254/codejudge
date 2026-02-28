@@ -1,26 +1,22 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { MessageSquare, ShieldAlert, Award, Play, Pause, RotateCcw, User } from 'lucide-react';
+import { MessageSquare, ShieldAlert, Play, Pause, RotateCcw, User, Volume2 } from 'lucide-react';
+
+import axios from 'axios';
 
 interface InterviewSimulatorProps {
     isActive: boolean;
     onToggle: (state: boolean) => void;
+    code: string;
+    language: string;
+    problemDescription: string;
 }
 
-const InterviewSimulator: React.FC<InterviewSimulatorProps> = ({ isActive, onToggle }) => {
+const InterviewSimulator: React.FC<InterviewSimulatorProps> = ({ isActive, onToggle, code, language, problemDescription }) => {
     const [timeLeft, setTimeLeft] = useState(2700); // 45 minutes in seconds
     const [isPaused, setIsPaused] = useState(false);
     const [currentPrompt, setCurrentPrompt] = useState<string>('');
+    const [isSpeaking, setIsSpeaking] = useState(false);
     const timerRef = useRef<any>(null);
-
-    const interviewerPrompts = [
-        "Could you explain the time complexity of your current approach?",
-        "How would this scale if the input size was 10^9?",
-        "Are there any edge cases you've considered? What about null or empty inputs?",
-        "Can we optimize the space complexity further?",
-        "Think about the trade-offs between this approach and a recursive one.",
-        "What happens if there are duplicate values in the input?",
-        "Walk me through your logic for this specific conditional block."
-    ];
 
     useEffect(() => {
         if (isActive && !isPaused && timeLeft > 0) {
@@ -36,18 +32,43 @@ const InterviewSimulator: React.FC<InterviewSimulatorProps> = ({ isActive, onTog
 
     useEffect(() => {
         if (isActive) {
-            // New prompt every 5-10 minutes
-            const promptInterval = setInterval(() => {
-                const randomPrompt = interviewerPrompts[Math.floor(Math.random() * interviewerPrompts.length)];
-                setCurrentPrompt(randomPrompt);
-            }, 300000); // 5 minutes
+            // New prompt every 5 minutes (reduced for demo purposes to 1 min if needed, but keeping 5 as per design)
+            const promptInterval = setInterval(fetchContextualPrompt, 300000);
 
             // Initial prompt
             setCurrentPrompt("I'd like to see how you approach this. Start by explaining your strategy.");
+            speak("I'd like to see how you approach this. Start by explaining your strategy.");
 
             return () => clearInterval(promptInterval);
         }
     }, [isActive]);
+
+    const fetchContextualPrompt = async () => {
+        try {
+            const response = await axios.post('http://localhost:8080/api/ai/interview-question', {
+                code,
+                language,
+                problemDescription
+            });
+            const question = response.data.question;
+            setCurrentPrompt(question);
+            speak(question);
+        } catch (error) {
+            console.error("Failed to fetch interview question:", error);
+        }
+    };
+
+    const speak = (text: string) => {
+        if ('speechSynthesis' in window) {
+            window.speechSynthesis.cancel();
+            const utterance = new SpeechSynthesisUtterance(text);
+            utterance.rate = 0.9;
+            utterance.pitch = 1;
+            utterance.onstart = () => setIsSpeaking(true);
+            utterance.onend = () => setIsSpeaking(false);
+            window.speechSynthesis.speak(utterance);
+        }
+    };
 
     const formatTime = (seconds: number) => {
         const mins = Math.floor(seconds / 60);
@@ -59,6 +80,7 @@ const InterviewSimulator: React.FC<InterviewSimulatorProps> = ({ isActive, onTog
         setTimeLeft(2700);
         setIsPaused(false);
         setCurrentPrompt('');
+        window.speechSynthesis.cancel();
     };
 
     if (!isActive) return null;
@@ -76,7 +98,6 @@ const InterviewSimulator: React.FC<InterviewSimulatorProps> = ({ isActive, onTog
             </div>
 
             <div className="p-4 space-y-4">
-                {/* Timer Display */}
                 <div className="text-center py-4 bg-gray-800/50 rounded-lg border border-gray-700/50 relative overflow-hidden">
                     <div className="absolute top-0 left-0 h-full bg-red-500/5 transition-all duration-1000" style={{ width: `${(timeLeft / 2700) * 100}%` }} />
                     <div className="relative">
@@ -87,39 +108,44 @@ const InterviewSimulator: React.FC<InterviewSimulatorProps> = ({ isActive, onTog
                     </div>
                 </div>
 
-                {/* Interviewer Interaction */}
                 <div className="space-y-2">
-                    <div className="flex items-center gap-2 text-[10px] font-bold text-gray-400 uppercase tracking-wider">
-                        <User size={12} className="text-blue-400" />
-                        <span>Interviewer Prompt</span>
+                    <div className="flex items-center justify-between">
+                        <div className="flex items-center gap-2 text-[10px] font-bold text-gray-400 uppercase tracking-wider">
+                            <User size={12} className="text-blue-400" />
+                            <span>Interviewer</span>
+                        </div>
+                        {isSpeaking && <Volume2 size={12} className="text-blue-400 animate-bounce" />}
                     </div>
                     <div className="bg-blue-600/5 border border-blue-500/20 p-3 rounded-lg relative">
                         <div className="absolute -top-1 -left-1">
                             <MessageSquare size={12} className="text-blue-500 fill-blue-500/20" />
                         </div>
-                        <p className="text-xs text-gray-300 italic leading-relaxed">
-                            "{currentPrompt || "Start by verbalizing your thought process..."}"
+                        <p className="text-xs text-blue-100 italic leading-relaxed">
+                            "{currentPrompt || "Let's see your approach..."}"
                         </p>
                     </div>
+                    <button
+                        onClick={() => speak(currentPrompt)}
+                        className="text-[9px] text-blue-400 hover:text-blue-300 transition-colors uppercase font-bold"
+                    >
+                        Repeat Question
+                    </button>
                 </div>
 
-                {/* Lockout Warning */}
                 <div className="p-3 bg-orange-500/5 border border-orange-500/20 rounded-lg">
                     <div className="flex items-center gap-2 text-orange-500 text-[10px] font-bold uppercase mb-1">
                         <ShieldAlert size={12} />
                         <span>Restricted Mode</span>
                     </div>
                     <p className="text-[10px] text-gray-500 leading-tight">
-                        Hints, AI Review, and logic explanations are disabled to simulate a real interview.
+                        Standard hints are disabled. Listen closely to the interviewer's feedback.
                     </p>
                 </div>
 
-                {/* Controls */}
                 <div className="flex gap-2">
                     <button
                         onClick={() => setIsPaused(!isPaused)}
-                        className={`flex-1 flex items-center justify-center gap-2 py-2 rounded-lg text-xs font-bold transition-all ${isPaused ? 'bg-green-600/20 text-green-400 border border-green-500/30' : 'bg-gray-800 text-gray-300'
-                            }`}
+                        className={`flex-1 flex items-center justify-center gap-2 py-2 rounded-lg text-xs font-bold transition-all ${isPaused ? 'bg-green-600/20 text-green-400 border border-green-500/30' : 'bg-gray-800 text-gray-300'}`}
                     >
                         {isPaused ? <Play size={14} /> : <Pause size={14} />}
                         {isPaused ? 'Resume' : 'Pause'}
@@ -127,32 +153,17 @@ const InterviewSimulator: React.FC<InterviewSimulatorProps> = ({ isActive, onTog
                     <button
                         onClick={resetInterview}
                         className="p-2 bg-gray-800 text-gray-500 hover:text-white rounded-lg transition-colors border border-transparent hover:border-gray-700"
-                        title="Restart Interview"
                     >
                         <RotateCcw size={16} />
                     </button>
                     <button
                         onClick={() => onToggle(false)}
-                        className="px-4 py-2 bg-red-600 hover:bg-red-500 text-white rounded-lg text-xs font-bold transition-all shadow-lg shadow-red-900/20"
+                        className="px-4 py-2 bg-red-600 hover:bg-red-500 text-white rounded-lg text-xs font-bold transition-all"
                     >
                         End
                     </button>
                 </div>
             </div>
-
-            {timeLeft === 0 && (
-                <div className="absolute inset-0 bg-gray-950/90 backdrop-blur-md flex flex-col items-center justify-center p-6 text-center animate-in fade-in duration-500">
-                    <Award className="text-yellow-500 mb-4" size={48} />
-                    <h4 className="text-lg font-black text-white mb-2 uppercase">Time's Up!</h4>
-                    <p className="text-sm text-gray-400 mb-6">How did you do? Remember to reflect on your performance in the journal.</p>
-                    <button
-                        onClick={resetInterview}
-                        className="w-full py-2 bg-indigo-600 hover:bg-indigo-500 text-white rounded-lg text-sm font-bold transition-all"
-                    >
-                        Try Again
-                    </button>
-                </div>
-            )}
         </div>
     );
 };
