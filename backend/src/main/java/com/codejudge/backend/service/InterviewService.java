@@ -34,6 +34,7 @@ public class InterviewService {
         }
 
         // Return a random sophisticated-sounding question
-        return fallbackPrompts.get(new Random().nextInt(fallbackPrompts.length));
+        return fallbackPrompts.get(new Random().nextInt(fallbackPrompts.size()));
+
     }
 }
