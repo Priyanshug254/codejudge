@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
-import { BarChart3, TrendingUp, Clock, Cpu, Zap, X, AlertCircle } from 'lucide-react';
+import { TrendingUp, Clock, Cpu, Zap, X, AlertCircle } from 'lucide-react';
+
 import axios from 'axios';
 
 interface PerformanceMetrics {
